@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  backend-service:
+    build:
+      context: .
+      dockerfile: backend-service/Dockerfile
+    ports:
+      - "8080:8080"
+    env_file: "backend-service/.env"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      - loki
+
+  # LOGGING SERVICE
+  loki:
+    image: grafana/loki:latest
+    container_name: monorepo-display-case-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - loki
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: monorepo-display-case-promtail
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - loki
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: monorepo-display-case-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - loki
+
+networks:
+  loki:
+    driver: bridge
+
+volumes:
+  grafana-data:
