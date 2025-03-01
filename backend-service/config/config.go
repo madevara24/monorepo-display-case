@@ -24,6 +24,19 @@ type Config struct {
 	Port               string `mapstructure:"PORT"`
 	ServerReadTimeout  int    `mapstructure:"SERVER_READ_TIMEOUT"`
 	ServerWriteTimeout int    `mapstructure:"SERVER_WRITE_TIMEOUT"`
+
+	// OpenAI
+	OpenAIAPIKey string `mapstructure:"OPENAI_API_KEY"`
+
+	// DATABASE: POSTGRES
+	DBHost        string `mapstructure:"DB_HOST"`
+	DBMaxConn     int    `mapstructure:"DB_MAX_CONN"`
+	DBMaxIdleConn int    `mapstructure:"DB_MAX_IDLE_CONN"`
+	DBMaxTTLConn  int    `mapstructure:"DB_MAX_TTL_CONN"`
+	DBName        string `mapstructure:"DB_NAME"`
+	DBPassword    string `mapstructure:"DB_PASSWORD"`
+	DBPort        string `mapstructure:"DB_PORT"`
+	DBUsername    string `mapstructure:"DB_USERNAME"`
 }
 
 func Get() *Config {
