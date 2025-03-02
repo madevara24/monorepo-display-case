@@ -8,19 +8,19 @@ import (
 	"fmt"
 )
 
-type AskService struct {
+type AskUsecase struct {
 	openAIClient *openai.Client
 	questionRepo *repository.QuestionRepository
 }
 
-func NewAskService(openAIClient *openai.Client, questionRepo *repository.QuestionRepository) *AskService {
-	return &AskService{
+func NewAskUsecase(openAIClient *openai.Client, questionRepo *repository.QuestionRepository) *AskUsecase {
+	return &AskUsecase{
 		openAIClient: openAIClient,
 		questionRepo: questionRepo,
 	}
 }
 
-func (i *AskService) Execute(ctx context.Context, req Request) (Response, error) {
+func (i *AskUsecase) Execute(ctx context.Context, req Request) (Response, error) {
 	_, err := req.MapIntoQuestion()
 	if err != nil {
 		return Response{}, err
@@ -43,7 +43,8 @@ func (i *AskService) Execute(ctx context.Context, req Request) (Response, error)
 	// TODO: Use similar content to generate response with OpenAI
 
 	return Response{
-		Answer: "TODO: answer question",
+		// Answer: "TODO: answer question",
+		Answer: similar[0].Content,
 	}, nil
 }
 

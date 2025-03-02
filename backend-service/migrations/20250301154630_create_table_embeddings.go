@@ -15,7 +15,9 @@ func mig_20250301154630_create_table_embeddings_up(tx *sql.Tx) error {
 	_, err := tx.Exec(`
         CREATE TABLE embeddings (
             uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            content TEXT NOT NULL,
+            category TEXT,
+			granularity TEXT,
+			content TEXT,
             embedding vector(1536) NOT NULL,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

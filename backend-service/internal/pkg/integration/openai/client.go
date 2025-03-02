@@ -19,7 +19,7 @@ func NewClient(apiKey string) *Client {
 
 func (c *Client) CreateEmbedding(ctx context.Context, text string) ([]float32, error) {
 	resp, err := c.client.CreateEmbeddings(ctx, gopenai.EmbeddingRequest{
-		Model: gopenai.LargeEmbedding3,
+		Model: gopenai.AdaEmbeddingV2,
 		Input: []string{text},
 	})
 	if err != nil {

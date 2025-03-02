@@ -4,6 +4,7 @@ import (
 	"backend-service/config"
 	questionRepository "backend-service/internal/app/domain/question/repository"
 	"backend-service/internal/app/domain/question/usecase/ask"
+	"backend-service/internal/app/domain/question/usecase/store"
 	"backend-service/internal/app/domain/system/usecase/healthcheck"
 	"backend-service/internal/pkg/datasource"
 	"backend-service/internal/pkg/integration/openai"
@@ -11,8 +12,9 @@ import (
 
 type Container struct {
 	// Services
-	HealthCheckService *healthcheck.HealthCheckService
-	AskService         *ask.AskService
+	HealthCheckUsecase *healthcheck.HealthCheckUsecase
+	AskUsecase         *ask.AskUsecase
+	StoreUsecase       *store.StoreUsecase
 
 	// External Services
 	OpenAIClient *openai.Client
@@ -23,8 +25,9 @@ func NewContainer(datasource *datasource.DataSource) *Container {
 	questionRepo := questionRepository.NewQuestionRepository(datasource.Postgres)
 	return &Container{
 		// Services
-		HealthCheckService: healthcheck.NewHealthCheckService(),
-		AskService:         ask.NewAskService(openAIClient, questionRepo),
+		HealthCheckUsecase: healthcheck.NewHealthCheckService(datasource.Postgres),
+		AskUsecase:         ask.NewAskUsecase(openAIClient, questionRepo),
+		StoreUsecase:       store.NewStoreUsecase(openAIClient, questionRepo),
 
 		// External Services
 		OpenAIClient: openAIClient,

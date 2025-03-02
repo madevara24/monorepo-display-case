@@ -2,21 +2,46 @@ package healthcheck
 
 import (
 	"context"
+
+	"github.com/jmoiron/sqlx"
 )
 
-type HealthCheckService struct {
+type HealthCheckUsecase struct {
+	db *sqlx.DB
 }
 
-func NewHealthCheckService() *HealthCheckService {
-	return &HealthCheckService{}
+func NewHealthCheckService(db *sqlx.DB) *HealthCheckUsecase {
+	return &HealthCheckUsecase{
+		db: db,
+	}
 }
 
-func (i *HealthCheckService) Execute(ctx context.Context) (Response, error) {
+func (i *HealthCheckUsecase) Execute(ctx context.Context) (Response, error) {
+	status := Status{
+		Postgresql: true,
+	}
+
+	err := i.db.PingContext(ctx)
+	if err != nil {
+		return Response{
+			Message: "UNHEALTHY",
+			Status: Status{
+				Postgresql: false,
+			},
+		}, err
+	}
+
 	return Response{
-		Status: "OK",
+		Message: "OK",
+		Status:  status,
 	}, nil
 }
 
 type Response struct {
-	Status string `json:"status"`
+	Message string `json:"message"`
+	Status  Status `json:"status"`
+}
+
+type Status struct {
+	Postgresql bool `json:"postgresql"`
 }

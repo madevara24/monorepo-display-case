@@ -26,7 +26,9 @@ func (h *Router) RegisterRouter() {
 	h.router.Use(gin.Recovery())
 
 	// PING
-	h.router.GET("/health", healthcheck.HealthCheck(h.container.HealthCheckService))
+	h.router.GET("/health", healthcheck.HealthCheck(h.container.HealthCheckUsecase))
 
-	h.router.POST("/questions", question.Ask(h.container.AskService))
+	// QUESTION
+	h.router.POST("/ask", question.Ask(h.container.AskUsecase))
+	h.router.POST("/store", question.Store(h.container.StoreUsecase))
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/madevara24/go-common/response"
 )
 
-func HealthCheck(service *healthcheck.HealthCheckService) gin.HandlerFunc {
+func HealthCheck(service *healthcheck.HealthCheckUsecase) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		res, err := service.Execute(c.Copy().Request.Context())
 		if err != nil {
@@ -18,8 +18,8 @@ func HealthCheck(service *healthcheck.HealthCheckService) gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
-			"message": "successfully get healthcheck",
-			"data":    res,
+			"message": res.Message,
+			"data":    res.Status,
 		})
 	}
 }

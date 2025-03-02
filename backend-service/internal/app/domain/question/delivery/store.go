@@ -1,7 +1,7 @@
 package delivery
 
 import (
-	"backend-service/internal/app/domain/question/usecase/ask"
+	"backend-service/internal/app/domain/question/usecase/store"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,15 +9,15 @@ import (
 	"github.com/madevara24/go-common/response"
 )
 
-func Ask(service *ask.AskUsecase) gin.HandlerFunc {
+func Store(service *store.StoreUsecase) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		req := ask.Request{}
+		req := store.Request{}
 
 		if err := request.UnmarshalJSON(c, &req); err != nil {
 			return
 		}
 
-		res, err := service.Execute(c.Copy().Request.Context(), req)
+		err := service.Execute(c.Copy().Request.Context(), req)
 		if err != nil {
 			response.WriteError(c, err)
 			return
@@ -25,8 +25,7 @@ func Ask(service *ask.AskUsecase) gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
-			"message": "successfully ask question",
-			"data":    res,
+			"message": "successfully store content",
 		})
 	}
 }
