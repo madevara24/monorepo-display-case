@@ -1,60 +1,82 @@
-const { Pool } = require('pg');
 const fs = require('fs');
-const csv = require('csv-parse');
+const path = require('path');
+const http = require('http');
+const xlsx = require('xlsx');
 require('dotenv').config();
 
-// Create PostgreSQL connection pool using environment variables
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    database: process.env.DB_NAME,
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    max: process.env.DB_MAX_CONN,
-    idleTimeoutMillis: process.env.DB_MAX_TTL_CONN,
-    connectionTimeoutMillis: 2000,
-});
+function loadData() {
+    const filePath = path.join(__dirname, 'data.xlsx');
+    const workbook = xlsx.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = xlsx.utils.sheet_to_json(worksheet, { defval: '' });
 
-async function loadAndInsertData() {
-    try {
-        // Test database connection
-        const client = await pool.connect();
-        console.log('Successfully connected to PostgreSQL database');
+    return jsonData;
+}
 
-        // TODO: Define the path to your CSV file
-        const csvFilePath = './data.csv';
+async function postDataSequentially(data) {
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
+    for (const item of data) {
+        const postData = JSON.stringify(item);
 
-        // TODO: Once CSV structure is defined:
-        // 1. Create appropriate table schema
-        // 2. Define INSERT query template
-        // 3. Map CSV columns to table columns
-        // 4. Implement data validation/transformation if needed
-
-        const fileStream = fs.createReadStream(csvFilePath);
-        const parser = fileStream.pipe(csv.parse({
-            // TODO: Configure parser options based on CSV structure
-            columns: true,
-            skip_empty_lines: true
-        }));
-
-        for await (const record of parser) {
-            try {
-                // TODO: Replace with actual INSERT query
-                // await client.query('INSERT INTO your_table (columns) VALUES ($1, $2, ...)', [values]);
-                console.log('Inserted record:', record);
-            } catch (err) {
-                console.error('Error inserting record:', err);
+        const options = {
+            hostname: new URL(backendUrl).hostname,
+            port: new URL(backendUrl).port,
+            path: '/store',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(postData)
             }
-        }
+        };
 
-        client.release();
-        console.log('Data import completed');
+        await new Promise((resolve, reject) => {
+            const req = http.request(options, (res) => {
+                let data = '';
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                res.on('end', () => {
+                    console.log(`Response: ${data}`);
+                    resolve();
+                });
+            });
 
-    } catch (err) {
-        console.error('Database connection error:', err);
-    } finally {
-        await pool.end();
+            req.on('error', (e) => {
+                console.error(`Problem with request: ${e.message}`);
+                reject(e);
+            });
+
+            req.write(postData);
+            req.end();
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
 }
 
-loadAndInsertData().catch(console.error);
+function checkHealth() {
+    return new Promise((resolve, reject) => {
+        const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
+        http.get(`${backendUrl}/health`, (resp) => {
+            resolve(resp.statusCode);
+        }).on("error", (err) => {
+            reject("Error: " + err.message);
+        });
+    });
+}
+
+async function main() {
+    try {
+        const data = loadData();
+        console.log(data);
+        const healthStatusCode = await checkHealth();
+        console.log('Health Check Status Code:', healthStatusCode);
+
+        await postDataSequentially(data);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+main();
