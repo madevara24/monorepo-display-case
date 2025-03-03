@@ -18,6 +18,7 @@ type Embedding struct {
 	Granularity string    `json:"granularity"`
 	Content     string    `json:"content"`
 	Embedding   []float32 `json:"embedding"`
+	Score       float64   `json:"score"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
