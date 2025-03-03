@@ -33,7 +33,7 @@ func (i *AskUsecase) Execute(ctx context.Context, req Request) (Response, error)
 	}
 
 	// Find similar content
-	similar, err := i.questionRepo.FindSimilar(ctx, vector, 5)
+	similar, err := i.questionRepo.FindSimilar(ctx, vector, req.Limit)
 	if err != nil {
 		return Response{}, err
 	}
@@ -52,6 +52,7 @@ func (i *AskUsecase) Execute(ctx context.Context, req Request) (Response, error)
 
 type Request struct {
 	Question string `json:"question" validate:"required"`
+	Limit    int    `json:"limit"`
 }
 
 type Response struct {

@@ -17,6 +17,10 @@ func Ask(service *ask.AskUsecase) gin.HandlerFunc {
 			return
 		}
 
+		if req.Limit == 0 {
+			req.Limit = 5
+		}
+
 		res, err := service.Execute(c.Copy().Request.Context(), req)
 		if err != nil {
 			response.WriteError(c, err)

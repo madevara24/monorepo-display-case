@@ -39,7 +39,7 @@ func (r *QuestionRepository) FindSimilar(ctx context.Context, embedding []float3
 			FROM embeddings
 		)
 		SELECT * FROM similar_embeddings
-		--ORDER BY score
+		ORDER BY score
 		LIMIT $2`,
 		pq.Array(embedding), limit,
 	)
