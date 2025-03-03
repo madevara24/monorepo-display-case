@@ -33,10 +33,14 @@ func (r *QuestionRepository) StoreEmbedding(ctx context.Context, embedding entit
 func (r *QuestionRepository) FindSimilar(ctx context.Context, embedding []float32, limit int) ([]entity.Embedding, error) {
 	var embeddings []entity.Embedding
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT uuid, category, granularity, content, embedding::float4[], embedding <=> $1::float4[]::vector as score
-         FROM embeddings 
-         --ORDER BY embedding <=> $1::float4[]::vector --turned off for now until I can figure out a proper threshold
-         LIMIT $2`,
+		`WITH similar_embeddings AS (
+			SELECT uuid, category, granularity, content, embedding::float4[], 
+				   embedding <=> $1::float4[]::vector as score
+			FROM embeddings
+		)
+		SELECT * FROM similar_embeddings
+		--ORDER BY score
+		LIMIT $2`,
 		pq.Array(embedding), limit,
 	)
 	if err != nil {
