@@ -42,10 +42,22 @@ func (i *AskUsecase) Execute(ctx context.Context, req Request) (Response, error)
 		return Response{}, fmt.Errorf("no similar content found")
 	}
 
-	res := Response{}
-	res.MapIntoSet(similar)
+	// Extract contents for context
+	var contents []string
+	for _, s := range similar {
+		contents = append(contents, s.Content)
+	}
 
-	// TODO: Use similar content to generate response with OpenAI
+	// Generate response using similar content
+	answer, err := i.openAIClient.GenerateResponse(ctx, req.Question, contents)
+	if err != nil {
+		return Response{}, err
+	}
+
+	res := Response{
+		Answer: answer,
+	}
+	res.MapIntoSet(similar)
 
 	return res, nil
 }
