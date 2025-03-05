@@ -1,0 +1,109 @@
+.profile {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.content {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+.textContent {
+  flex: 2;
+}
+
+.name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #2c5364;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0.5rem 0;
+  color: #4a4a4a;
+}
+
+.summary {
+  margin: 1.5rem 0;
+  line-height: 1.6;
+  color: #666;
+}
+
+.summary p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.imageContainer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.profileImage {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.textContent {
+  flex: 2;
+  text-align: center;  /* Add this line */
+}
+
+.links {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 0.5rem 0 1.5rem 0;
+  justify-content: center;  /* Add this line */
+}
+
+.links a {
+  text-decoration: none;
+  color: #2c5364;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.links a:hover {
+  color: #203a43;
+  text-decoration: underline;
+}
+
+.separator {
+  color: #666;
+  font-weight: 300;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column-reverse;
+    gap: 2rem;
+  }
+
+  .imageContainer {
+    width: 100%;
+  }
+
+  .profileImage {
+    width: 200px;
+    height: 200px;
+  }
+
+  .name {
+    font-size: 2rem;
+  }
+
+  .links {
+    flex-wrap: wrap;
+  }
+}

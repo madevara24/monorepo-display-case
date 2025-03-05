@@ -7,6 +7,31 @@
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
+  /* Primary Colors */
+  --color-background: #FFFFF0;
+  --color-text: #1A1A1A;
+  --color-primary: #3A5F8F;
+  --color-secondary: #E0E0E0;
+
+  /* Support Colors */
+  --color-button: #007ACC;
+  --color-link: #007ACC;
+  --color-link-hover: #005A9C;
+  --color-border: #CCCCCC;
+
+  /* Status Colors */
+  --color-success: #2D9C3C;
+  --color-warning: #E67E22;
+  --color-error: #D32F2F;
+
+  /* UI Elements */
+  --color-card-background: #F8F8F8;
+  --color-card-border: #D0D0D0;
+
+  /* Other existing root styles... */
+  background-color: var(--color-background);
+  color: var(--color-text);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -64,5 +89,15 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #121212;
+    --color-text: #E0E0E0;
+    --color-primary: #4A90E2;
+    --color-secondary: #222222;
+    /* ... other dark mode colors ... */
   }
 }
