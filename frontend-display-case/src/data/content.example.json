@@ -1,0 +1,59 @@
+{
+    "profile": {
+      "name": "Your Name",
+      "title": "Your Title",
+      "links": {
+        "github": {
+          "url": "https://github.com/username",
+          "label": "GitHub"
+        },
+        "linkedin": {
+          "url": "https://linkedin.com/in/  ",
+          "label": "LinkedIn"
+        },
+        "email": {
+          "url": "mailto:username@example.com",
+          "label": "Email"
+        }
+      },
+      "summary": "An enthusiastic software developer with a passion for creating innovative solutions. Experienced in full-stack development with a focus on modern web technologies. Enjoys learning new programming languages and frameworks.",
+      "image": "/sample-headshot.jpg"
+    },
+    "experience": {
+      "title": "Professional Experience",
+      "items": [
+        {
+          "organization": "Tech Solutions",
+          "description": "Tech Solutions is a leading provider of innovative software solutions for businesses worldwide.",
+          "location": "New York, USA",
+          "duration": {
+            "start": "January 2020",
+            "end": "Present"
+          },
+          "role": "Software Engineer",
+          "projects": [
+            {
+              "name": "Project Alpha",
+              "achievements": [
+                "Enhanced system performance by 50% through code optimization and refactoring.",
+                "Led a team of 5 developers to successfully deliver a major software release on time.",
+                "Implemented a new feature that increased user engagement by 30%."
+              ]
+            }
+          ],
+          "technologies": ["JavaScript", "React", "Node.js", "AWS"]
+        },
+        {
+            "organization": "Innovatech",
+            "description": "Innovatech is a startup focused on developing cutting-edge technology solutions.",
+            "role": "Junior Developer",
+            "duration": { "start": "2018", "end": "2019" },
+            "achievements": [
+              "Contributed to the development of a mobile application that received positive user feedback.",
+              "Assisted in the implementation of a responsive web design for the company's main product."
+            ],
+            "technologies": ["HTML", "CSS", "JavaScript"]
+          }
+      ]
+    }
+  }

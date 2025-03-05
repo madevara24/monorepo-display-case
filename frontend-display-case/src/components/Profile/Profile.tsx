@@ -1,43 +1,60 @@
 import { FC } from 'react'
 import styles from './Profile.module.css'
 
-const Profile: FC = () => {
+interface ProfileLink {
+  url: string
+  label: string
+}
+
+interface ProfileData {
+  name: string
+  title: string
+  links: {
+    github: ProfileLink
+    linkedin: ProfileLink
+    email: ProfileLink
+  }
+  summary: string
+  image: string
+}
+
+interface ProfileProps {
+  data: ProfileData
+}
+
+const Profile: FC<ProfileProps> = ({ data }) => {
   return (
     <section className={styles.profile}>
-    <div className={styles.content}>
-      <div className={styles.textContent}>
-        <h1 className={styles.name}>Aditya Devara</h1>
-        <h2 className={styles.title}>Backend Engineer</h2>
-        <div className={styles.links}>
-          <a href="https://github.com/madevara24" target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
-          <span className={styles.separator}>|</span>
-          <a href="https://linkedin.com/in/madevara24" target="_blank" rel="noopener noreferrer">
-            LinkedIn
-          </a>
-          <span className={styles.separator}>|</span>
-          <a href="mailto:adityadevara91@gmail.com">
-            Email
-          </a>
+      <div className={styles.content}>
+        <div className={styles.textContent}>
+          <h1 className={styles.name}>{data.name}</h1>
+          <h2 className={styles.title}>{data.title}</h2>
+          <div className={styles.links}>
+            <a href={data.links.github.url} target="_blank" rel="noopener noreferrer">
+              {data.links.github.label}
+            </a>
+            <span className={styles.separator}>|</span>
+            <a href={data.links.linkedin.url} target="_blank" rel="noopener noreferrer">
+              {data.links.linkedin.label}
+            </a>
+            <span className={styles.separator}>|</span>
+            <a href={data.links.email.url}>
+              {data.links.email.label}
+            </a>
+          </div>
+          <div className={styles.summary}>
+            <p>{data.summary}</p>
+          </div>
         </div>
-        <div className={styles.summary}>
-          <p>
-            A passionate software engineer with X years of experience in building scalable applications.
-            Specialized in full-stack development with expertise in React, TypeScript, and Go.
-            Currently focused on cloud-native solutions and distributed systems.
-          </p>
+        <div className={styles.imageContainer}>
+          <img 
+            src={data.image} 
+            alt="Professional headshot" 
+            className={styles.profileImage}
+          />
         </div>
       </div>
-      <div className={styles.imageContainer}>
-        <img 
-          src="/headshot.jpg" 
-          alt="Professional headshot" 
-          className={styles.profileImage}
-        />
-      </div>
-    </div>
-  </section>
+    </section>
   )
 }
 
