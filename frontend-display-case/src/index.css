@@ -10,7 +10,7 @@
   /* Primary Colors */
   --color-background: #FFFFF0;
   --color-text: #1A1A1A;
-  --color-primary: #3A5F8F;
+  --color-primary: #696A62;
   --color-secondary: #E0E0E0;
 
   /* Support Colors */
@@ -25,7 +25,7 @@
   --color-error: #D32F2F;
 
   /* UI Elements */
-  --color-card-background: #F8F8F8;
+  --color-card-background: #FFFCEC;
   --color-card-border: #D0D0D0;
 
   /* Other existing root styles... */
@@ -92,12 +92,11 @@ button:focus-visible {
   }
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --color-background: #121212;
     --color-text: #E0E0E0;
     --color-primary: #4A90E2;
     --color-secondary: #222222;
-    /* ... other dark mode colors ... */
   }
-}
+} */

@@ -6,18 +6,18 @@ const Profile: FC = () => {
     <section className={styles.profile}>
     <div className={styles.content}>
       <div className={styles.textContent}>
-        <h1 className={styles.name}>Your Name</h1>
-        <h2 className={styles.title}>Software Engineer</h2>
+        <h1 className={styles.name}>Aditya Devara</h1>
+        <h2 className={styles.title}>Backend Engineer</h2>
         <div className={styles.links}>
-          <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/madevara24" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
           <span className={styles.separator}>|</span>
-          <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener noreferrer">
+          <a href="https://linkedin.com/in/madevara24" target="_blank" rel="noopener noreferrer">
             LinkedIn
           </a>
           <span className={styles.separator}>|</span>
-          <a href="mailto:your.email@example.com">
+          <a href="mailto:adityadevara91@gmail.com">
             Email
           </a>
         </div>
