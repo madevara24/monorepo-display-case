@@ -7,24 +7,18 @@
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
-  /* Primary Colors */
+  /* Light Mode Colors */
   --color-background: #FFFFF0;
   --color-text: #1A1A1A;
   --color-primary: #5D5F59;
   --color-secondary: #E0E0E0;
-
-  /* Support Colors */
   --color-button: #007ACC;
   --color-link: #007ACC;
   --color-link-hover: #005A9C;
   --color-border: #CCCCCC;
-
-  /* Status Colors */
   --color-success: #2D9C3C;
   --color-warning: #E67E22;
   --color-error: #D32F2F;
-
-  /* UI Elements */
   --color-card-background: #FFFCEC;
   --color-card-border: #D0D0D0;
 
@@ -36,6 +30,23 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark Mode Colors */
+.dark-mode {
+  --color-background: #1A1A1A;
+  --color-text: #E0E0E0;
+  --color-primary: #7A8B9C;
+  --color-secondary: #333333;
+  --color-button: #0090EA;
+  --color-link: #4DA8FF;
+  --color-link-hover: #77BAFF;
+  --color-border: #404040;
+  --color-success: #43B754;
+  --color-warning: #F39C12;
+  --color-error: #E74C3C;
+  --color-card-background: #242424;
+  --color-card-border: #404040;
 }
 
 a {
