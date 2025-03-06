@@ -1,32 +1,54 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
+type BaseTheme = 'light' | 'dark';
+type StyleVariant = 'default' | 'cyberpunk';
+
 interface ThemeContextType {
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
+  baseTheme: BaseTheme;
+  styleVariant: StyleVariant;
+  toggleBaseTheme: () => void;
+  setStyleVariant: (variant: StyleVariant) => void;
+  toggleCyberpunkTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check local storage for saved preference
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
+  const [baseTheme, setBaseTheme] = useState<BaseTheme>(() => {
+    const saved = localStorage.getItem('baseTheme');
+    return (saved as BaseTheme) || 'light';
+  });
+
+  const [styleVariant, setStyleVariant] = useState<StyleVariant>(() => {
+    const saved = localStorage.getItem('styleVariant');
+    return (saved as StyleVariant) || 'default';
   });
 
   useEffect(() => {
-    // Save preference to local storage
-    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
-    // Apply theme class to body
-    document.documentElement.classList.toggle('dark-mode', isDarkMode);
-  }, [isDarkMode]);
+    localStorage.setItem('baseTheme', baseTheme);
+    localStorage.setItem('styleVariant', styleVariant);
+    
+    // Apply theme classes
+    document.documentElement.classList.toggle('dark-mode', baseTheme === 'dark');
+    document.documentElement.classList.toggle('theme-cyberpunk', styleVariant === 'cyberpunk');
+  }, [baseTheme, styleVariant]);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode((prev: boolean) => !prev);
+  const toggleBaseTheme = () => {
+    setBaseTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
+  const toggleCyberpunkTheme = () => {
+    setStyleVariant(prev => prev === 'cyberpunk' ? 'default' : 'cyberpunk');
   };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+    <ThemeContext.Provider value={{ 
+      baseTheme, 
+      styleVariant, 
+      toggleBaseTheme, 
+      setStyleVariant,
+      toggleCyberpunkTheme
+    }}>
       {children}
     </ThemeContext.Provider>
   );

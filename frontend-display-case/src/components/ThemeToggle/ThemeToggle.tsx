@@ -3,17 +3,17 @@ import { useTheme } from '../../context/ThemeContext';
 import styles from './ThemeToggle.module.css';
 
 const ThemeToggle: FC = () => {
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { baseTheme, toggleBaseTheme } = useTheme();
 
   return (
     <button
       className={styles.themeToggle}
-      onClick={toggleDarkMode}
-      aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+      onClick={toggleBaseTheme}
+      aria-label={`Switch to ${baseTheme === 'light' ? 'dark' : 'light'} mode`}
     >
-      {isDarkMode ? '🌞' : '🌙'}
+      {baseTheme === 'light' ? '🌙' : '🌞'}
     </button>
   );
 };
 
-export default ThemeToggle; 
+export default ThemeToggle;

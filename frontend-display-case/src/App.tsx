@@ -3,7 +3,7 @@ import Experience from './components/Experience'
 import content from './data/content.json'
 import './App.css'
 import { ThemeProvider } from './context/ThemeContext'
-import ThemeToggle from './components/ThemeToggle/ThemeToggle'
+import ThemeControls from './components/ThemeControls/ThemeControls'
 
 function App() {
   return (
@@ -11,8 +11,7 @@ function App() {
       <Profile data={content.profile} />
       <div className="section-separator" />
       <Experience title={content.experience.title} items={content.experience.items} />
-      <ThemeToggle />
-      {/* Other components will go here */}
+      <ThemeControls />
     </ThemeProvider>
   )
 }
