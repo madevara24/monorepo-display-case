@@ -22,7 +22,7 @@ func NewRouter(ctx context.Context, router *gin.Engine, container *Container) *R
 
 func (h *Router) RegisterRouter() {
 
-	// h.router.Use(SetTDRMiddleware())
+	h.router.Use(SetTDRMiddleware())
 	h.router.Use(gin.Recovery())
 
 	// PING

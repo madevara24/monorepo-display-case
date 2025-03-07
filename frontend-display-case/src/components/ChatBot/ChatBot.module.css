@@ -18,6 +18,63 @@
 .subtitle {
   color: var(--color-text);
   opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.disclaimer {
+  font-size: 0.8rem;
+  color: var(--color-text);
+  opacity: 0.7;
+  max-width: 600px;
+  margin: 0 auto 0.5rem;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.disclaimer a {
+  color: var(--color-link);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.disclaimer a:hover {
+  color: var(--color-link-hover);
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-error, #D32F2F);
+  margin: 0 auto 1.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background-color: rgba(211, 47, 47, 0.1);
+  width: fit-content;
+}
+
+.offlineIcon {
+  animation: pulse 2s infinite;
+}
+
+.offlineText {
+  font-weight: 500;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Cyberpunk theme styling for status indicator */
+:global(.theme-cyberpunk) .statusIndicator {
+  color: #FF5F6D;
+  background-color: rgba(255, 95, 109, 0.2);
+  border: 1px solid #FF5F6D;
+  font-family: 'Share Tech Mono', monospace;
 }
 
 .chatContainer {
@@ -203,6 +260,23 @@
 :global(.theme-cyberpunk) .timestamp {
   color: #8fd2c4 !important;
   font-family: 'Share Tech Mono', monospace !important;
+}
+
+:global(.theme-cyberpunk) .disclaimer {
+  color: #8fd2c4;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+:global(.theme-cyberpunk) .disclaimer a {
+  color: #64d4b7;
+  text-decoration: none;
+  border-bottom: 1px solid #64d4b7;
+  padding-bottom: 1px;
+}
+
+:global(.theme-cyberpunk) .disclaimer a:hover {
+  color: #8fd2c4;
+  border-bottom-color: #8fd2c4;
 }
 
 @media (max-width: 768px) {
