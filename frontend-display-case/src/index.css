@@ -20,6 +20,12 @@
   --color-card-background: #FFFCEC;
   --color-card-border: #D0D0D0;
 
+  /* Chatbot Colors */
+  --color-chatbot-bot-bubble: var(--color-secondary);
+  --color-chatbot-user-bubble: var(--color-primary);
+  --color-chatbot-bot-text: var(--color-text);
+  --color-chatbot-user-text: #FFFFFF;
+
   /* Base transition for theme changes */
   --theme-transition: 0.3s ease-out;
 
@@ -52,6 +58,12 @@
   --color-error: #E74C3C;
   --color-card-background: #242424;
   --color-card-border: #404040;
+  
+  /* Chatbot Colors */
+  --color-chatbot-bot-bubble: var(--color-secondary);
+  --color-chatbot-user-bubble: var(--color-primary);
+  --color-chatbot-bot-text: var(--color-text);
+  --color-chatbot-user-text: #FFFFFF;
 }
 
 /* Cyberpunk Theme */
@@ -59,6 +71,7 @@
   /* Fonts */
   --font-primary: 'Rajdhani', sans-serif;
   --font-secondary: 'Share Tech Mono', monospace;
+  --font-chatbot: 'Play', sans-serif;
   
   /* Core Colors */
   --color-primary: #00F6FF;
@@ -80,6 +93,13 @@
   --color-success: #00FF66;
   --color-warning: #FFB800;
   --color-error: #FF003C;
+
+  
+  /* Chatbot Colors */
+  --color-chatbot-bot-bubble: #1e2326;
+  --color-chatbot-user-bubble: #224937;
+  --color-chatbot-bot-text: #8ee9e0;
+  --color-chatbot-user-text: #79deb4;
 
   /* Special Effects */
   --glow-primary: 0 0 10px rgba(0, 246, 255, 0.3);

@@ -9,8 +9,6 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  width: 2.5rem;
-  height: 2.5rem;
 }
 
 .styleToggle:hover {
@@ -34,16 +32,7 @@
   box-shadow: var(--glow-primary);
 }
 
-.dota2 {
-  background: var(--color-primary);
-  color: var(--color-text);
-  box-shadow: var(--glow-primary);
-  border: 1px solid var(--color-secondary);
-}
-
 .icon {
-  width: 1.5rem;
-  height: 1.5rem;
   transition: transform 0.3s ease;
 }
 
@@ -55,17 +44,3 @@
 :global(.theme-cyberpunk) .styleToggle:not(.active) .icon {
   filter: drop-shadow(0 0 2px var(--color-primary));
 }
-
-@media (max-width: 768px) {
-  .text {
-    display: none;
-  }
-  
-  .styleToggle {
-    padding: 0.5rem;
-  }
-  
-  .icon {
-    font-size: 1.5rem;
-  }
-} 

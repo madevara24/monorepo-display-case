@@ -1,4 +1,19 @@
 services:
+  # FRONTEND SERVICE (Development)
+  frontend:
+    build:
+      context: ./frontend-display-case
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend-display-case:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    depends_on:
+      - backend-service
+
   # BACKEND SERVICE
   backend-service:
     build:
