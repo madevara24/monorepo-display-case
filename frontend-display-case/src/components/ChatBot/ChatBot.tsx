@@ -24,8 +24,9 @@ const ChatBot: FC = () => {
   const [isBackendAvailable, setIsBackendAvailable] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
-  // Get API URL from environment variable with fallback
+  // Get API URL and result limit from environment variables with fallbacks
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+  const RESULT_LIMIT = import.meta.env.VITE_RESULT_LIMIT || 10
 
   // Check backend health when component mounts
   useEffect(() => {
@@ -122,7 +123,8 @@ const ChatBot: FC = () => {
         },
         credentials: 'include',
         body: JSON.stringify({ 
-          question: input 
+          question: input,
+          limit: Number(RESULT_LIMIT)
         }),
       })
 
@@ -135,7 +137,7 @@ const ChatBot: FC = () => {
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content: data.answer || "I'm sorry, I couldn't process your request at this time.",
+        content: data.data.answer || "I'm sorry, I couldn't process your request at this time.",
         timestamp: new Date()
       }
       
@@ -160,8 +162,8 @@ const ChatBot: FC = () => {
   return (
     <section className={styles.chatbot}>
       <div className={styles.header}>
-        <h2>Chat with AI Assistant</h2>
-        <p className={styles.subtitle}>Ask about my experience, projects, or skills</p>
+        <h2>AI Chatbot</h2>
+        <p className={styles.subtitle}>Want to know more about me but still unsure wether to send me an email? Just ask this chatbot below! I'm still tinkering with the model and the data structure but it should do the trick for short simple questions.</p>
         <p className={styles.disclaimer}>
           This AI may occasionally provide inaccurate information. If you notice any errors, 
           please <a href={content.profile.links.email.url}>email me</a> directly.
