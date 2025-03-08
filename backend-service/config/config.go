@@ -25,6 +25,11 @@ type Config struct {
 	ServerReadTimeout  int    `mapstructure:"SERVER_READ_TIMEOUT"`
 	ServerWriteTimeout int    `mapstructure:"SERVER_WRITE_TIMEOUT"`
 
+	// QUESTIONS
+	PrivateApiKey      string `mapstructure:"PRIVATE_API_KEY"`
+	RateLimitPerMinute int    `mapstructure:"RATE_LIMIT_PER_MINUTE"`
+	RateLimitBurst     int    `mapstructure:"RATE_LIMIT_BURST"`
+
 	// OpenAI
 	OpenAIAPIKey string `mapstructure:"OPENAI_API_KEY"`
 

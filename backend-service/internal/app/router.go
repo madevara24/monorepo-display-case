@@ -22,6 +22,8 @@ func NewRouter(ctx context.Context, router *gin.Engine, container *Container) *R
 
 func (h *Router) RegisterRouter() {
 
+	limiter := &RateLimiter{}
+
 	h.router.Use(SetTDRMiddleware())
 	h.router.Use(gin.Recovery())
 
@@ -29,6 +31,6 @@ func (h *Router) RegisterRouter() {
 	h.router.GET("/health", healthcheck.HealthCheck(h.container.HealthCheckUsecase))
 
 	// QUESTION
-	h.router.POST("/ask", question.Ask(h.container.AskUsecase))
-	h.router.POST("/store", question.Store(h.container.StoreUsecase))
+	h.router.POST("/ask", limiter.RateLimitMiddleware(), question.Ask(h.container.AskUsecase))
+	h.router.POST("/store", StaticKeyMiddleware(), question.Store(h.container.StoreUsecase))
 }

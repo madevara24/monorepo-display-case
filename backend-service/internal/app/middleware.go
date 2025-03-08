@@ -1,16 +1,22 @@
 package app
 
 import (
-	"backend-service/config"
-	"backend-service/internal/pkg/helper"
 	"bytes"
 	"io"
+	"sync"
 	"time"
+
+	"backend-service/config"
+	"backend-service/internal/pkg/errors"
+	"backend-service/internal/pkg/helper"
 
 	"github.com/gin-gonic/gin"
 	"github.com/madevara24/go-common/constant"
 	"github.com/madevara24/go-common/logger"
+	"github.com/madevara24/go-common/response"
 	"github.com/spf13/cast"
+
+	"golang.org/x/time/rate"
 )
 
 type bodyWriter struct {
@@ -76,5 +82,60 @@ func SetTDRMiddleware() gin.HandlerFunc {
 		// Logger Trace Distributed Request (TDR)
 		// List all information in one request log
 		logger.Log.TDR(ctx, "Request Information")
+	}
+}
+
+func StaticKeyMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		cfg := config.Get()
+
+		// Get the API key from the request header
+		apiKey := c.GetHeader("X-API-Key")
+
+		// Compare with the configured key
+		if apiKey != cfg.PrivateApiKey {
+			response.WriteError(c, errors.ERR_UNAUTHORIZED)
+			return
+		}
+
+		// Continue if the key is valid
+		c.Next()
+	}
+}
+
+type RateLimiter struct {
+	visitors sync.Map
+}
+
+func (r *RateLimiter) GetLimiter(ip string) *rate.Limiter {
+	cfg := config.Get()
+
+	limiter, exists := r.visitors.Load(ip)
+	if exists {
+		return limiter.(*rate.Limiter)
+	}
+
+	newLimiter := rate.NewLimiter(rate.Every(time.Minute/time.Duration(cfg.RateLimitPerMinute)), cfg.RateLimitBurst)
+	r.visitors.Store(ip, newLimiter)
+
+	// Remove the limiter after inactivity
+	go func() {
+		time.Sleep(1 * time.Minute)
+		r.visitors.Delete(ip)
+	}()
+
+	return newLimiter
+}
+
+func (r *RateLimiter) RateLimitMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ip := c.ClientIP()
+		limiter := r.GetLimiter(ip)
+
+		if !limiter.Allow() {
+			response.WriteError(c, errors.ERR_RATE_LIMIT_EXCEED)
+			return
+		}
+		c.Next()
 	}
 }
