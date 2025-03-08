@@ -55,7 +55,6 @@ const Experience: FC<ExperienceProps> = ({ title, items }) => {
               <h3 className={styles.organization}>
                 {item.organization} <span className={styles.separator}>|</span> <span className={styles.role}>{item.role}</span>
               </h3>
-              {/* <span className={styles.location}>{item.location}</span> */}
             </div>
             
             <div className={styles.duration}>

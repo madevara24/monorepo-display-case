@@ -173,9 +173,9 @@ const ChatBot: FC = () => {
     <section className={styles.chatbot}>
       <div className={styles.header}>
         <h2>AI Chatbot</h2>
-        <p className={styles.subtitle}>Want to know more about me but still unsure wether to send me an email? Just ask this chatbot below! I'm still tinkering with the model and the data structure but it should do the trick for short simple questions.</p>
+        <p className={styles.subtitle}>Still curious about me but too shy to send an email? Just ask this AI chatbot! It handles simple questions and won’t judge—even if you ask something cringy (don’t worry, I wouldn’t either).</p>
         <p className={styles.disclaimer}>
-          This AI may occasionally provide inaccurate information. If you notice any errors, 
+          This AI may occasionally provide inaccurate information. If it starts to hallucinate, 
           please <a href={content.profile.links.email.url}>email me</a> directly.
         </p>
         {!isBackendAvailable && (

@@ -1,20 +1,21 @@
-import Profile from './components/Profile'
-import Experience from './components/Experience'
-import ChatBot from './components/ChatBot'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import ExperiencePage from './pages/ExperiencePage'
+import Navbar from './components/Navbar'
 import content from './data/content.json'
 import './App.css'
 import { ThemeProvider } from './context/ThemeContext'
-import ThemeControls from './components/ThemeControls/ThemeControls'
 
 function App() {
   return (
     <ThemeProvider>
-      <Profile data={content.profile} />
-      <div className="section-separator" />
-      <Experience title={content.experience.title} items={content.experience.items} />
-      <div className="section-separator" />
-      <ChatBot />
-      <ThemeControls />
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<HomePage content={content} />} />
+          <Route path="/experience" element={<ExperiencePage content={content} />} />
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   )
 }
