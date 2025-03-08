@@ -66,7 +66,24 @@
   gap: 0.75rem;
   align-items: center;
   margin: 0.5rem 0 1.5rem 0;
-  justify-content: center;  /* Add this line */
+  justify-content: center;
+}
+
+.linkWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  fill: var(--color-link);
+  transition: fill 0.3s ease;
+}
+
+.links a:hover .icon {
+  fill: var(--color-link-hover);
 }
 
 .links a {
@@ -79,6 +96,16 @@
 .links a:hover {
   color: var(--color-link-hover);
   text-decoration: underline;
+}
+
+/* Cyberpunk theme styling for icons */
+:global(.theme-cyberpunk) .icon {
+  fill: #64d4b7;
+}
+
+:global(.theme-cyberpunk) .links a:hover .icon {
+  fill: #8fd2c4;
+  filter: drop-shadow(0 0 2px rgba(100, 212, 183, 0.7));
 }
 
 .separator {

@@ -10,6 +10,9 @@ interface Message {
   timestamp: Date
 }
 
+// Use template questions from content.json
+const TEMPLATE_QUESTIONS = content.chatbot.questions;
+
 const ChatBot: FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -22,6 +25,7 @@ const ChatBot: FC = () => {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [isBackendAvailable, setIsBackendAvailable] = useState(true)
+  const [showSuggestions, setShowSuggestions] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
   // Get API URL and result limit from environment variables with fallbacks
@@ -84,6 +88,11 @@ const ChatBot: FC = () => {
     scrollToBottom()
   }, [messages])
 
+  const handleSuggestionClick = (question: string) => {
+    setInput(question)
+    setShowSuggestions(false)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim()) return
@@ -98,6 +107,7 @@ const ChatBot: FC = () => {
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsTyping(true)
+    setShowSuggestions(false)
 
     // Check if backend is available before making API call
     if (!isBackendAvailable) {
@@ -176,64 +186,83 @@ const ChatBot: FC = () => {
         )}
       </div>
 
-      <div className={styles.chatContainer}>
-        <div className={styles.messages}>
-          {messages.map(message => (
-            <div
-              key={message.id}
-              className={`${styles.message} ${
-                message.type === 'user' ? styles.userMessage : styles.botMessage
-              }`}
-            >
-              <div className={styles.messageContent}>
-                <ReactMarkdown
-                  components={{
-                    strong: ({node, ...props}) => <strong className={styles.markdown} {...props} />,
-                    a: ({node, ...props}) => <a className={styles.markdown} {...props} />,
-                    em: ({node, ...props}) => <em className={styles.markdown} {...props} />,
-                    code: ({node, ...props}) => <code className={styles.markdown} {...props} />
-                  }}
+      <div className={styles.chatLayout}>
+        {showSuggestions && (
+          <div className={styles.suggestionSidebar}>
+            <p className={styles.suggestionTitle}>Try asking:</p>
+            <div className={styles.suggestions}>
+              {TEMPLATE_QUESTIONS.map((question, index) => (
+                <button 
+                  key={index} 
+                  className={styles.suggestionButton}
+                  onClick={() => handleSuggestionClick(question)}
                 >
-                  {message.content}
-                </ReactMarkdown>
-              </div>
-              <div className={styles.timestamp}>
-                {message.timestamp.toLocaleTimeString([], { 
-                  hour: '2-digit', 
-                  minute: '2-digit'
-                })}
-              </div>
+                  {question}
+                </button>
+              ))}
             </div>
-          ))}
-          {isTyping && (
-            <div className={`${styles.message} ${styles.botMessage}`}>
-              <div className={styles.typingIndicator}>
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className={styles.inputContainer}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            className={styles.input}
-            disabled={!isBackendAvailable && isTyping}
-          />
-          <button 
-            type="submit" 
-            className={styles.sendButton}
-            disabled={!isBackendAvailable && isTyping}
-          >
-            Send
-          </button>
-        </form>
+        <div className={styles.chatContainer}>
+          <div className={styles.messages}>
+            {messages.map(message => (
+              <div
+                key={message.id}
+                className={`${styles.message} ${
+                  message.type === 'user' ? styles.userMessage : styles.botMessage
+                }`}
+              >
+                <div className={styles.messageContent}>
+                  <ReactMarkdown
+                    components={{
+                      strong: ({node, ...props}) => <strong className={styles.markdown} {...props} />,
+                      a: ({node, ...props}) => <a className={styles.markdown} {...props} />,
+                      em: ({node, ...props}) => <em className={styles.markdown} {...props} />,
+                      code: ({node, ...props}) => <code className={styles.markdown} {...props} />
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                </div>
+                <div className={styles.timestamp}>
+                  {message.timestamp.toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                  })}
+                </div>
+              </div>
+            ))}
+            {isTyping && (
+              <div className={`${styles.message} ${styles.botMessage}`}>
+                <div className={styles.typingIndicator}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <form onSubmit={handleSubmit} className={styles.inputContainer}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your message..."
+              className={styles.input}
+              disabled={!isBackendAvailable && isTyping}
+            />
+            <button 
+              type="submit" 
+              className={styles.sendButton}
+              disabled={!isBackendAvailable && isTyping}
+            >
+              Send
+            </button>
+          </form>
+        </div>
       </div>
     </section>
   )
