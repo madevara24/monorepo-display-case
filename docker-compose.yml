@@ -5,7 +5,7 @@ services:
       context: ./frontend-display-case
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "5173:80"
     networks:
       - app-network
     depends_on:
