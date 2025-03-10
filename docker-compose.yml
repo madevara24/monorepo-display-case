@@ -14,8 +14,8 @@ services:
   # BACKEND SERVICE
   backend-service:
     build:
-      context: .
-      dockerfile: backend-service/Dockerfile
+      context: ./backend-service
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     env_file: "backend-service/.env"
