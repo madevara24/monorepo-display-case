@@ -17,8 +17,8 @@ interface ExperienceCardProps {
 const ExperienceCard: FC<ExperienceCardProps> = ({ 
   organization, 
   role, 
-  duration,
-  technologies,
+  // duration,
+  // technologies,
   location,
   logo
 }) => {
