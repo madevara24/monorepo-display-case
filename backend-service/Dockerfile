@@ -6,14 +6,14 @@ FROM golang:1.23-alpine AS build
 WORKDIR /app
 
 # Copy go.mod and go.sum files
-COPY ../backend-service/go.mod ./
-COPY ../backend-service/go.sum ./
+COPY go.mod ./
+COPY go.sum ./
 
 # Download dependencies
 RUN go mod download
 
 # Copy the source code into the container
-COPY ../backend-service/. .
+COPY . .
 
 # Build the Go app
 RUN CGO_ENABLED=0 GOOS=linux go build -o backend-service .
@@ -25,7 +25,7 @@ FROM alpine:latest
 WORKDIR /root/
 
 # Copy the binary from the build stage
-COPY --from=build /app/backend-service /app/.env .
+COPY --from=build /app/backend-service /app/.env ./
 
 # Expose port 8080
 EXPOSE 8080
