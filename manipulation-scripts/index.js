@@ -26,7 +26,8 @@ async function postDataSequentially(data) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Content-Length': Buffer.byteLength(postData)
+                'Content-Length': Buffer.byteLength(postData),
+                'X-API-Key': process.env.API_KEY
             }
         };
 
