@@ -28,14 +28,14 @@ const ExperiencePage: FC<ExperiencePageProps> = ({ content }) => {
       <header className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Professional & Academic Journey</h1>
         <p className={styles.pageSubtitle}>
-          My professional career path and educational achievements
+          How a game developer wannabe turned into a backend engineer
         </p>
       </header>
       
-      <Experience title={content.experience.title} items={content.experience.items} />
+      <Experience title="Work Experience" items={content.experience.items} />
       
       <div className={styles.educationSection}>
-        <Education title={content.education.title} items={
+        <Education title="Education" items={
           content.education.items.map((item: EducationItem) => ({
             institution: item.name,
             description: `${item.degree} in ${item.major}. GPA: ${item.gpa}`,

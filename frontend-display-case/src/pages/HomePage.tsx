@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import Profile from '../components/Profile'
 import ExperienceCard from '../components/ExperienceCard'
+import ProjectCard from '../components/ProjectCard'
 import ChatBot from '../components/ChatBot'
 import styles from './HomePage.module.css'
 
@@ -38,6 +39,32 @@ const HomePage: FC<HomePageProps> = ({ content }) => {
       </section>
       
       <div className={styles.sectionSeparator} />
+      
+      {content.projects && (
+        <>
+          <section className={styles.projectsSection}>
+            <h2 className={styles.sectionTitle}>Projects</h2>
+            <p className={styles.sectionSubtitle}>
+              A selection of my projects on GitHub.
+              <a href={content.profile.links.github.url} target="_blank" rel="noopener noreferrer" className={styles.viewAll}>View all on GitHub →</a>
+            </p>
+            
+            <div className={styles.cardGrid}>
+              {content.projects.items.map((project: any, index: number) => (
+                <ProjectCard
+                  key={index}
+                  name={project.name}
+                  repo={project.repo}
+                  description={project.description}
+                  technologies={project.technologies}
+                />
+              ))}
+            </div>
+          </section>
+          
+          <div className={styles.sectionSeparator} />
+        </>
+      )}
       
       <ChatBot />
     </div>
