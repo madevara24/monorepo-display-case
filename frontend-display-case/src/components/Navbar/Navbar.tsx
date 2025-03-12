@@ -21,7 +21,7 @@ const Navbar = () => {
             isActive ? styles.activeLink : styles.link
           }
         >
-          Experience
+          Credentials
         </NavLink>
       </div>
       <div className={styles.themeToggle}>
