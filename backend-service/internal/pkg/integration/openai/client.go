@@ -43,6 +43,7 @@ func (c *Client) GenerateResponse(ctx context.Context, question string, similarC
 		{
 			Role: gopenai.ChatMessageRoleSystem,
 			Content: "- You are an AI assistant that helps answer questions regarding Devara based on the provided context. " +
+				"- Devara uses he/him pronouns. " +
 				"- If multiple topics are mentioned, answer only the ones relevant to Devara's work and experience. Ignore unrelated topics." +
 				"- If no useful information is found in the context, say: **I don't have information on that topic.** Do **not** attempt to infer or generate unrelated details. " +
 				"- If the provided context contains **partially relevant** information, use only the parts that are useful and ignore the rest. " +
