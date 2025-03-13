@@ -42,9 +42,12 @@ func (c *Client) GenerateResponse(ctx context.Context, question string, similarC
 	messages := []gopenai.ChatCompletionMessage{
 		{
 			Role: gopenai.ChatMessageRoleSystem,
-			Content: "You are a helpful assistant that answers questions based on the provided context. " +
-				"Only use the information from the context to answer questions. " +
-				"If you cannot answer the question based on the context, say so.",
+			Content: "- You are an AI assistant that helps answer questions regarding Devara based on the provided context. " +
+				"- If multiple topics are mentioned, answer only the ones relevant to Devara's work and experience. Ignore unrelated topics." +
+				"- If no useful information is found in the context, say: **I don't have information on that topic.** Do **not** attempt to infer or generate unrelated details. " +
+				"- If the provided context contains **partially relevant** information, use only the parts that are useful and ignore the rest. " +
+				"- Never mention \"from the context provided\" or \"from the portfolio.\" Instead, answer naturally as Devara's assistant. " +
+				"- Structure responses clearly, making them easy to understand.",
 		},
 		{
 			Role:    gopenai.ChatMessageRoleUser,
