@@ -1,0 +1,103 @@
+services:
+  # FRONTEND SERVICE (Development)
+  frontend:
+    build:
+      context: ./frontend-display-case
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend-display-case:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    depends_on:
+      - backend-service
+
+  # BACKEND SERVICE
+  backend-service:
+    build:
+      context: ./backend-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file: "backend-service/.env"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      loki:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # POSTGRESQL
+  postgres:
+    build:
+      context: .
+      dockerfile: postgres.Dockerfile
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"  
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+      
+# LOGGING SERVICE
+  loki:
+    image: grafana/loki:latest
+    container_name: monorepo-display-case-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - loki
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: monorepo-display-case-promtail
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - loki
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: monorepo-display-case-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - loki
+
+networks:
+  loki:
+    driver: bridge
+  app-network:
+    driver: bridge
+
+volumes:
+  grafana-data:
+  db_data: 
