@@ -46,14 +46,8 @@ func (i *StoreUsecase) ExecuteV2(ctx context.Context, req RequestV2) error {
 		return err
 	}
 
-	contentJSON, err := json.Marshal(req)
-	if err != nil {
-		return err
-	}
-	content := string(contentJSON)
-
 	// Create embedding for the question
-	vector, err := i.openAIClient.CreateEmbeddingV2(ctx, content)
+	vector, err := i.openAIClient.CreateEmbeddingV2(ctx, req.MapIntoEmbeddingText())
 	if err != nil {
 		return err
 	}
@@ -73,12 +67,12 @@ type RequestV2 struct {
 	entity.KnowledgeRaw
 }
 
-func (i *Request) MapIntoKnowledge() (entity.Knowledge, error) {
+func (r *Request) MapIntoKnowledge() (entity.Knowledge, error) {
 	var knowledge entity.Knowledge = entity.Knowledge{
 		UUID:        uuid.New().String(),
-		Category:    i.Category,
-		Granularity: i.Granularity,
-		Content:     i.Content,
+		Category:    r.Category,
+		Granularity: r.Granularity,
+		Content:     r.Content,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
@@ -88,9 +82,9 @@ func (i *Request) MapIntoKnowledge() (entity.Knowledge, error) {
 	return knowledge, nil
 }
 
-func (i *RequestV2) MapIntoKnowledgeV2() (entity.Knowledge, error) {
+func (r *RequestV2) MapIntoKnowledgeV2() (entity.Knowledge, error) {
 
-	metadataJSON, err := json.Marshal(i.Metadata)
+	metadataJSON, err := json.Marshal(r.Metadata)
 	if err != nil {
 		return entity.Knowledge{}, err
 	}
@@ -99,8 +93,8 @@ func (i *RequestV2) MapIntoKnowledgeV2() (entity.Knowledge, error) {
 	knowledge := entity.Knowledge{
 		UUID:        uuid.New().String(),
 		Category:    category,
-		Granularity: i.Metadata.Granularity,
-		Content:     i.Content,
+		Granularity: r.Metadata.Granularity,
+		Content:     r.Content,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
@@ -109,4 +103,8 @@ func (i *RequestV2) MapIntoKnowledgeV2() (entity.Knowledge, error) {
 		return entity.Knowledge{}, err
 	}
 	return knowledge, nil
+}
+
+func (r *RequestV2) MapIntoEmbeddingText() string {
+	return "This is what Devara did at " + r.Metadata.Company + " as a " + r.Metadata.Role + " in " + r.Metadata.Year + " for the project " + r.Metadata.Project + " in the category of " + r.Metadata.Category + "." + r.Content
 }
