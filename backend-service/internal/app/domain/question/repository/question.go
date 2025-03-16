@@ -2,7 +2,13 @@ package repository
 
 import (
 	"backend-service/internal/app/domain/question/entity"
+	"backend-service/internal/pkg/errors"
 	"context"
+	"database/sql"
+	"fmt"
+
+	"github.com/madevara24/go-common/logger"
+	"github.com/madevara24/go-common/txmanager"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -18,54 +24,75 @@ func NewQuestionRepository(db *sqlx.DB) *QuestionRepository {
 	}
 }
 
-func (r *QuestionRepository) StoreEmbedding(ctx context.Context, embedding entity.Embedding) error {
-	_, err := r.db.ExecContext(ctx,
-		"INSERT INTO embeddings (uuid, category, granularity, content, embedding) VALUES ($1, $2, $3, $4, $5::float4[]::vector)",
-		embedding.UUID,
-		embedding.Category,
-		embedding.Granularity,
-		embedding.Content,
-		pq.Array(embedding.Embedding),
+func (r *QuestionRepository) StoreQuestion(ctx context.Context, question entity.Question) error {
+	var (
+		query string = "INSERT INTO questions (uuid, question, embedding) VALUES ($1, $2, $3::float4[]::vector)"
+		tx    *sqlx.Tx
+		stmt  *sql.Stmt
+		err   error
 	)
-	return err
+
+	tx, _ = txmanager.ExtractTx(ctx)
+
+	if tx != nil {
+		stmt, err = tx.PrepareContext(ctx, tx.Rebind(query))
+	} else {
+		stmt, err = r.db.PrepareContext(ctx, r.db.Rebind(query))
+	}
+
+	if err != nil {
+		logger.Log.Error(ctx, errors.ERR_DB_DEFAULT(err).Error(), err)
+		return err
+	}
+
+	fmt.Println(query, question.UUID, question.Content, pq.Array(question.Embedding))
+
+	_, err = stmt.ExecContext(ctx, question.UUID, question.Content, pq.Array(question.Embedding))
+	if err != nil {
+		logger.Log.Error(ctx, errors.ERR_DB_DEFAULT(err).Error(), err)
+		return err
+	}
+
+	return nil
 }
 
-func (r *QuestionRepository) FindSimilar(ctx context.Context, embedding []float32, limit int) ([]entity.Embedding, error) {
-	var embeddings []entity.Embedding
-	rows, err := r.db.QueryContext(ctx,
-		`WITH similar_embeddings AS (
-			SELECT uuid, category, granularity, content, embedding::float4[], 
-				   embedding <=> $1::float4[]::vector as score
-			FROM embeddings
-		)
-		SELECT * FROM similar_embeddings
-		ORDER BY score
-		LIMIT $2`,
-		pq.Array(embedding), limit,
+func (r *QuestionRepository) StoreQuestionAnswers(ctx context.Context, questionAnswers []entity.QuestionAnswer) error {
+	var (
+		query  string = "INSERT INTO question_answers (uuid, question_uuid, knowledge_uuid, score) VALUES "
+		values []interface{}
+		tx     *sqlx.Tx
+		stmt   *sql.Stmt
+		err    error
 	)
+
+	for i, qa := range questionAnswers {
+		num := i * 4
+		query += fmt.Sprintf("($%d, $%d, $%d, $%d),", num+1, num+2, num+3, num+4)
+		values = append(values, qa.UUID, qa.QuestionUUID, qa.KnowledgeUUID, qa.Score)
+	}
+
+	query = query[:len(query)-1] // Remove the trailing comma
+
+	tx, _ = txmanager.ExtractTx(ctx)
+
+	if tx != nil {
+		stmt, err = tx.PrepareContext(ctx, tx.Rebind(query))
+	} else {
+		stmt, err = r.db.PrepareContext(ctx, r.db.Rebind(query))
+	}
+
+	fmt.Println(query, values)
+
 	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var emb entity.Embedding
-		if err := rows.Scan(
-			&emb.UUID,
-			&emb.Category,
-			&emb.Granularity,
-			&emb.Content,
-			pq.Array(&emb.Embedding),
-			&emb.Score,
-		); err != nil {
-			return nil, err
-		}
-		embeddings = append(embeddings, emb)
+		logger.Log.Error(ctx, errors.ERR_DB_DEFAULT(err).Error(), err)
+		return err
 	}
 
-	if err = rows.Err(); err != nil {
-		return nil, err
+	_, err = stmt.ExecContext(ctx, values...)
+	if err != nil {
+		logger.Log.Error(ctx, errors.ERR_DB_DEFAULT(err).Error(), err)
+		return err
 	}
 
-	return embeddings, nil
+	return nil
 }
