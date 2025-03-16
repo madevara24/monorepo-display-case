@@ -126,7 +126,7 @@ const ChatBot: FC = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/ask`, {
+      const response = await fetch(`${API_URL}/api/v2/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ const ChatBot: FC = () => {
     <section className={styles.chatbot}>
       <div className={styles.header}>
         <h2>AI Chatbot</h2>
-        <p className={styles.subtitle}>Still curious about me but too shy to send an email? Just ask this AI chatbot! It handles simple questions and won’t judge—even if you ask something cringy (don’t worry, I wouldn’t either).</p>
+        <p className={styles.subtitle}>Still curious about me but too shy to send an email? Just ask this AI chatbot! It handles simple questions and won't judge—even if you ask something cringy (don't worry, I wouldn't either).</p>
         <p className={styles.disclaimer}>
           This AI may occasionally provide inaccurate information. If it starts to hallucinate, 
           please <a href={content.profile.links.email.url}>email me</a> directly.
