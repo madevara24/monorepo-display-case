@@ -1,28 +1,65 @@
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
-const xlsx = require('xlsx');
+const { google } = require('googleapis');
+const { Command } = require('commander');
 require('dotenv').config();
 
-function loadData() {
-    const filePath = path.join(__dirname, 'data.xlsx');
-    const workbook = xlsx.readFile(filePath);
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const jsonData = xlsx.utils.sheet_to_json(worksheet, { defval: '' });
+const program = new Command();
 
-    return jsonData;
+async function loadData(sheetName = process.env.GOOGLE_SHEET_NAME) {
+    try {
+        // Load credentials
+        const credentials = JSON.parse(
+            fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8')
+        );
+
+        // Create auth client
+        const auth = new google.auth.GoogleAuth({
+            credentials,
+            scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly']
+        });
+
+        const sheets = google.sheets({ version: 'v4', auth });
+
+        // Get the spreadsheet data
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId: process.env.GOOGLE_SHEET_ID,
+            range: sheetName
+        });
+
+        const rows = response.data.values;
+        if (!rows || rows.length === 0) {
+            throw new Error('No data found in spreadsheet');
+        }
+
+        // Convert to JSON with header row as keys
+        const headers = rows[0];
+        const jsonData = rows.slice(1).map(row => {
+            const obj = {};
+            headers.forEach((header, index) => {
+                obj[header] = row[index] || ''; // Use empty string as default value
+            });
+            return obj;
+        });
+
+        return jsonData;
+    } catch (error) {
+        console.error('Error loading data from Google Sheets:', error);
+        throw error;
+    }
 }
 
-async function postDataSequentially(data) {
+async function postDataSequentially(data, version = 'v1') {
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
     for (const item of data) {
         const postData = JSON.stringify(item);
+        const path = version === 'v1' ? '/api/v1/store' : '/api/v2/store';
 
         const options = {
             hostname: new URL(backendUrl).hostname,
             port: new URL(backendUrl).port,
-            path: '/store',
+            path,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -67,17 +104,66 @@ function checkHealth() {
     });
 }
 
-async function main() {
+async function backfillV1() {
     try {
-        const data = loadData();
-        console.log(data);
+        const data = await loadData('Portofolio Model');
+        console.log('Loaded data for v1 backfill:', data.length, 'records');
         const healthStatusCode = await checkHealth();
         console.log('Health Check Status Code:', healthStatusCode);
 
-        await postDataSequentially(data);
+        if (healthStatusCode === 200) {
+            // await postDataSequentially(data, 'v1');
+            console.log('V1 backfill completed successfully');
+        } else {
+            console.error('Health check failed. Backend might be unavailable.');
+        }
     } catch (error) {
-        console.error(error);
+        console.error('Error during v1 backfill:', error);
     }
 }
 
-main();
+async function backfillV2() {
+    try {
+        const rawData = await loadData('Portofolio Model v2');
+        const data = rawData.map(item => ({
+            metadata: {
+                company: item.company,
+                role: item.role,
+                project: item.project,
+                category: item.category,
+                year: item.year,
+                content: item.content,
+                granularity: 'sentence'
+            },
+            content: item.content
+        }));
+
+        console.log('Loaded data for v2 backfill:', data.length, 'records');
+        const healthStatusCode = await checkHealth();
+        console.log('Health Check Status Code:', healthStatusCode);
+
+        if (healthStatusCode === 200) {
+            await postDataSequentially(data, 'v2');
+            console.log('V2 backfill completed successfully');
+        } else {
+            console.error('Health check failed. Backend might be unavailable.');
+        }
+    } catch (error) {
+        console.error('Error during v2 backfill:', error);
+    }
+}
+
+program
+    .name('backfill-tool')
+    .description('CLI tool for running data backfills')
+    .version('1.0.0');
+
+program.command('v1')
+    .description('Run backfill using v1 implementation')
+    .action(backfillV1);
+
+program.command('v2')
+    .description('Run backfill using v2 implementation')
+    .action(backfillV2);
+
+program.parse(process.argv);
