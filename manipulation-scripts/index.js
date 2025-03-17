@@ -153,6 +153,35 @@ async function backfillV2() {
     }
 }
 
+async function saveDataToJson(data, filename) {
+    try {
+        // Create data directory if it doesn't exist
+        const dataDir = path.join(__dirname, 'data');
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
+
+        const filePath = path.join(dataDir, filename);
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+        console.log(`Data saved successfully to ${filePath}`);
+    } catch (error) {
+        console.error('Error saving data to JSON:', error);
+        throw error;
+    }
+}
+
+async function fetchAndSaveData() {
+    try {
+        const sheetName = process.env.GOOGLE_SHEET_NAME;
+        const data = await loadData(sheetName);
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `portfolio-data-${timestamp}.json`;
+        await saveDataToJson(data, filename);
+    } catch (error) {
+        console.error('Error during data fetch and save:', error);
+    }
+}
+
 program
     .name('backfill-tool')
     .description('CLI tool for running data backfills')
@@ -165,5 +194,9 @@ program.command('v1')
 program.command('v2')
     .description('Run backfill using v2 implementation')
     .action(backfillV2);
+
+program.command('fetch')
+    .description('Fetch data from Google Sheets and save to JSON file')
+    .action(fetchAndSaveData);
 
 program.parse(process.argv);
