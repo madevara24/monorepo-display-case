@@ -47,7 +47,7 @@ func (i *StoreUsecase) ExecuteV2(ctx context.Context, req RequestV2) error {
 	}
 
 	// Create embedding for the question
-	vector, err := i.openAIClient.CreateEmbeddingV2(ctx, req.MapIntoEmbeddingText())
+	vector, err := i.openAIClient.CreateEmbeddingV2(ctx, req.Content)
 	if err != nil {
 		return err
 	}
@@ -103,8 +103,4 @@ func (r *RequestV2) MapIntoKnowledgeV2() (entity.Knowledge, error) {
 		return entity.Knowledge{}, err
 	}
 	return knowledge, nil
-}
-
-func (r *RequestV2) MapIntoEmbeddingText() string {
-	return "This is what Devara did at " + r.Metadata.Company + " as a " + r.Metadata.Role + " in " + r.Metadata.Year + " for the project " + r.Metadata.Project + " in the category of " + r.Metadata.Category + "." + r.Content
 }

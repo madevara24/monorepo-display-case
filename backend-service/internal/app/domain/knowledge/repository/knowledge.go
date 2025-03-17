@@ -59,7 +59,7 @@ func (r *KnowledgeRepository) FindSimilar(ctx context.Context, embedding []float
 	var query = `
 		WITH similar_embeddings AS (
 			SELECT uuid, category, granularity, content, embedding::float4[], 
-				   embedding <=> $1::float4[]::vector as score
+				   (embedding <=> $1::float4[]::vector) * 10 as score
 			FROM knowledge
 		)
 		SELECT * FROM similar_embeddings
