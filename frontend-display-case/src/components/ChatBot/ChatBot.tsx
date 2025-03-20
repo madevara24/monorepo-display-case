@@ -25,7 +25,6 @@ const ChatBot: FC = () => {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [isBackendAvailable, setIsBackendAvailable] = useState(true)
-  const [showSuggestions, setShowSuggestions] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
   // Get API URL and result limit from environment variables with fallbacks
@@ -90,7 +89,6 @@ const ChatBot: FC = () => {
 
   const handleSuggestionClick = (question: string) => {
     setInput(question)
-    setShowSuggestions(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -107,7 +105,6 @@ const ChatBot: FC = () => {
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsTyping(true)
-    setShowSuggestions(false)
 
     // Check if backend is available before making API call
     if (!isBackendAvailable) {
@@ -187,22 +184,20 @@ const ChatBot: FC = () => {
       </div>
 
       <div className={styles.chatLayout}>
-        {showSuggestions && (
-          <div className={styles.suggestionSidebar}>
-            <p className={styles.suggestionTitle}>Try asking:</p>
-            <div className={styles.suggestions}>
-              {TEMPLATE_QUESTIONS.map((question, index) => (
-                <button 
-                  key={index} 
-                  className={styles.suggestionButton}
-                  onClick={() => handleSuggestionClick(question)}
-                >
-                  {question}
-                </button>
-              ))}
-            </div>
+        <div className={styles.suggestionSidebar}>
+          <p className={styles.suggestionTitle}>Try asking:</p>
+          <div className={styles.suggestions}>
+            {TEMPLATE_QUESTIONS.map((question, index) => (
+              <button 
+                key={index} 
+                className={styles.suggestionButton}
+                onClick={() => handleSuggestionClick(question)}
+              >
+                {question}
+              </button>
+            ))}
           </div>
-        )}
+        </div>
 
         <div className={styles.chatContainer}>
           <div className={styles.messages}>

@@ -1,13 +1,18 @@
 import { FC } from 'react';
-import ThemeToggle from '../ThemeToggle/ThemeToggle';
-// import CyberpunkToggle from '../StyleVariantToggle/StyleVariantToggle';
 import styles from './ThemeControls.module.css';
+import { useTheme } from '../../context/ThemeContext';
 
 const ThemeControls: FC = () => {
+  const { baseTheme, toggleBaseTheme } = useTheme();
+
   return (
     <div className={styles.themeControls}>
-      {/* <CyberpunkToggle /> */}
-      <ThemeToggle />
+      <button
+        onClick={toggleBaseTheme}
+        aria-label={`Switch to ${baseTheme === 'light' ? 'dark' : 'light'} mode`}
+      >
+        {baseTheme === 'light' ? '🌙' : '☀️'}
+      </button>
     </div>
   );
 };
