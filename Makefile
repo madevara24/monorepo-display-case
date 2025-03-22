@@ -24,3 +24,9 @@ all: backend frontend
 clean:
 	$(MAKE) -C backend-service clean
 	$(MAKE) -C frontend-display-case clean
+
+.PHONY: infra
+infra:
+    @echo "${CYAN}Deploying infrastructure services...${NC}"
+    kubectl apply -f k8s/postgres/
+    kubectl apply -f k8s/logging/
