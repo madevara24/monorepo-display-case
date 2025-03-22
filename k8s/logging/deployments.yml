@@ -17,17 +17,36 @@ spec:
           image: grafana/loki:latest
           ports:
             - containerPort: 3100
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
           volumeMounts:
             - name: loki-config
               mountPath: /etc/loki
             - name: loki-storage
               mountPath: /loki
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3100
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 3100
+            initialDelaySeconds: 300
       volumes:
         - name: loki-config
           configMap:
             name: loki-config
         - name: loki-storage
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: loki-pvc
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -47,12 +66,21 @@ spec:
           image: grafana/promtail:latest
           args:
             - -config.file=/etc/promtail/promtail.yaml
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
           volumeMounts:
             - name: promtail-config
               mountPath: /etc/promtail
             - name: docker-logs
               mountPath: /var/lib/docker/containers
               readOnly: true
+            - name: positions
+              mountPath: /positions
       volumes:
         - name: promtail-config
           configMap:
@@ -60,6 +88,9 @@ spec:
         - name: docker-logs
           hostPath:
             path: /var/lib/docker/containers
+        - name: positions
+          persistentVolumeClaim:
+            claimName: promtail-positions-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -80,9 +111,17 @@ spec:
           image: grafana/grafana:latest
           ports:
             - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           volumeMounts:
             - name: grafana-storage
               mountPath: /var/lib/grafana
       volumes:
         - name: grafana-storage
-          emptyDir: {} 
+          persistentVolumeClaim:
+            claimName: grafana-pvc 
