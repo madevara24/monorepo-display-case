@@ -1,7 +1,15 @@
 # Variables
 REGISTRY=localhost:5000
 CYAN=\033[0;36m
+GREEN=\033[0;32m
+RED=\033[0;31m
 NC=\033[0m # No Color
+
+# Directories
+POSTGRES_DIR=/opt/postgres-data
+LOKI_DIR=/opt/loki-data
+GRAFANA_DIR=/opt/grafana-data
+PROMTAIL_DIR=/opt/promtail-positions
 
 .PHONY: help backend frontend all clean k8s-init k8s-storage k8s-secrets k8s-deploy k8s-verify k8s-all
 
@@ -36,12 +44,34 @@ clean:
 
 # Kubernetes Commands
 k8s-init:
-	@echo "${CYAN}Creating required directories...${NC}"
-	sudo mkdir -p /opt/postgres-data /opt/loki-data /opt/grafana-data /opt/promtail-positions
-	@echo "${CYAN}Setting permissions...${NC}"
-	sudo chown -R 999:999 /opt/postgres-data
-	sudo chown -R 10001:10001 /opt/loki-data
-	sudo chown -R 472:472 /opt/grafana-data
+	@echo "${CYAN}Checking and creating required directories...${NC}"
+	@for dir in $(POSTGRES_DIR) $(LOKI_DIR) $(GRAFANA_DIR) $(PROMTAIL_DIR); do \
+		if [ ! -d $$dir ]; then \
+			echo "Creating $$dir..."; \
+			sudo mkdir -p $$dir || { echo "${RED}Failed to create $$dir${NC}"; exit 1; }; \
+			echo "${GREEN}Created $$dir${NC}"; \
+		else \
+			echo "$$dir already exists"; \
+		fi \
+	done
+	@echo "${CYAN}Setting correct permissions...${NC}"
+	@# PostgreSQL user (999:999)
+	@sudo chown -R 999:999 $(POSTGRES_DIR) && \
+		echo "${GREEN}Set permissions for PostgreSQL data directory${NC}" || \
+		{ echo "${RED}Failed to set PostgreSQL permissions${NC}"; exit 1; }
+	@# Loki user (10001:10001)
+	@sudo chown -R 10001:10001 $(LOKI_DIR) && \
+		echo "${GREEN}Set permissions for Loki data directory${NC}" || \
+		{ echo "${RED}Failed to set Loki permissions${NC}"; exit 1; }
+	@# Grafana user (472:472)
+	@sudo chown -R 472:472 $(GRAFANA_DIR) && \
+		echo "${GREEN}Set permissions for Grafana data directory${NC}" || \
+		{ echo "${RED}Failed to set Grafana permissions${NC}"; exit 1; }
+	@# Promtail directory (same as Loki)
+	@sudo chown -R 10001:10001 $(PROMTAIL_DIR) && \
+		echo "${GREEN}Set permissions for Promtail positions directory${NC}" || \
+		{ echo "${RED}Failed to set Promtail permissions${NC}"; exit 1; }
+	@echo "${GREEN}All directories are set up correctly${NC}"
 
 k8s-storage:
 	@echo "${CYAN}Applying storage configurations...${NC}"
@@ -58,17 +88,44 @@ k8s-secrets:
 	kubectl apply -f k8s/postgres/secret.yml
 
 k8s-deploy:
-	@echo "${CYAN}Building and pushing images...${NC}"
-	docker build -t $(REGISTRY)/postgres-vector:latest -f postgres.Dockerfile .
-	docker push $(REGISTRY)/postgres-vector:latest
-	@echo "${CYAN}Deploying PostgreSQL...${NC}"
+	@echo "${CYAN}Building and pushing infrastructure images...${NC}"
+	@echo "Building postgres-vector..."
+	docker build -t $(REGISTRY)/postgres-vector:latest -f postgres.Dockerfile . || \
+		{ echo "${RED}Failed to build postgres-vector${NC}"; exit 1; }
+	docker push $(REGISTRY)/postgres-vector:latest || \
+		{ echo "${RED}Failed to push postgres-vector${NC}"; exit 1; }
+
+	@echo "${CYAN}Building application images...${NC}"
+	@echo "Building backend-service..."
+	docker build -t $(REGISTRY)/backend-service:latest ./backend-service || \
+		{ echo "${RED}Failed to build backend-service${NC}"; exit 1; }
+	docker push $(REGISTRY)/backend-service:latest || \
+		{ echo "${RED}Failed to push backend-service${NC}"; exit 1; }
+
+	@echo "Building frontend..."
+	docker build -t $(REGISTRY)/frontend:latest ./frontend-display-case || \
+		{ echo "${RED}Failed to build frontend${NC}"; exit 1; }
+	docker push $(REGISTRY)/frontend:latest || \
+		{ echo "${RED}Failed to push frontend${NC}"; exit 1; }
+
+	@echo "${CYAN}Deploying infrastructure services...${NC}"
+	@echo "Deploying PostgreSQL..."
 	kubectl apply -f k8s/postgres/statefulset.yml
 	kubectl apply -f k8s/postgres/service.yml
-	@echo "${CYAN}Deploying logging stack...${NC}"
+
+	@echo "Deploying logging stack..."
 	kubectl apply -f k8s/logging/loki-config.yml
 	kubectl apply -f k8s/logging/promtail-config.yml
 	kubectl apply -f k8s/logging/deployments.yml
 	kubectl apply -f k8s/logging/services.yml
+
+	@echo "${CYAN}Deploying application services...${NC}"
+	kubectl apply -f k8s/backend/deployment.yml
+	kubectl apply -f k8s/backend/service.yml
+	kubectl apply -f k8s/frontend/deployment.yml
+	kubectl apply -f k8s/frontend/service.yml
+
+	@echo "${GREEN}All services deployed successfully${NC}"
 
 k8s-verify:
 	@echo "${CYAN}Verifying deployments...${NC}"
