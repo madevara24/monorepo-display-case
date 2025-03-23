@@ -11,7 +11,7 @@ LOKI_DIR=/opt/loki-data
 GRAFANA_DIR=/opt/grafana-data
 PROMTAIL_DIR=/opt/promtail-positions
 
-.PHONY: help backend frontend all clean k8s-init k8s-storage k8s-secrets k8s-deploy k8s-verify k8s-all
+.PHONY: help backend frontend all clean k8s-init k8s-storage k8s-secrets k8s-deploy k8s-verify k8s-all k8s-ingress-setup k8s-ingress
 
 help:
 	@echo "${CYAN}Available commands:${NC}"
@@ -27,6 +27,8 @@ help:
 	@echo "make k8s-deploy  - Deploy all services"
 	@echo "make k8s-verify  - Verify deployments"
 	@echo "make k8s-all     - Run all k8s steps (except secrets)"
+	@echo "make k8s-ingress-setup - Install and configure NGINX Ingress Controller"
+	@echo "make k8s-ingress - Apply Ingress configuration"
 
 backend:
 	@echo "${CYAN}Building backend service...${NC}"
@@ -138,3 +140,20 @@ k8s-verify:
 k8s-all: k8s-init k8s-storage k8s-deploy k8s-verify
 	@echo "${CYAN}All k8s deployments completed!${NC}"
 	@echo "${CYAN}Note: Secrets were not applied. Run 'make k8s-secrets' after setting up secret.yml${NC}"
+
+k8s-ingress-setup:
+	@echo "${CYAN}Setting up NGINX Ingress Controller...${NC}"
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+	@echo "${CYAN}Waiting for Ingress Controller to be ready...${NC}"
+	kubectl wait --namespace ingress-nginx \
+		--for=condition=ready pod \
+		--selector=app.kubernetes.io/component=controller \
+		--timeout=120s
+	@echo "${GREEN}Ingress Controller is ready${NC}"
+
+k8s-ingress:
+	@echo "${CYAN}Applying Ingress configuration...${NC}"
+	kubectl apply -f k8s/ingress.yml
+	@echo "${GREEN}Ingress configuration applied${NC}"
+	@echo "${CYAN}To check the Ingress status:${NC} kubectl get ingress"
+	@echo "${CYAN}To check the Ingress controller:${NC} kubectl get pods -n ingress-nginx"
