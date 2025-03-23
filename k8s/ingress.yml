@@ -3,34 +3,62 @@ kind: Ingress
 metadata:
   name: app-ingress
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
-    # Add SSL redirect when you have certificates
-    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # Traefik specific annotations
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
-  - host: "your-domain.com"  # Replace
+  - host: "madevara24.space"
     http:
       paths:
-      - path: /(.*)
+      - path: /
         pathType: Prefix
         backend:
           service:
             name: frontend
             port:
               number: 80
-      - path: /api/(.*)
+      - path: /health
         pathType: Prefix
         backend:
           service:
             name: backend-service
             port:
               number: 8080
-  # Uncomment when you have SSL certificates
-  # tls:
-  # - hosts:
-  #   - your-domain.com
-  #   secretName: tls-secret 
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8080
+  - host: "www.madevara24.space"  # www subdomain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+      - path: /health
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8080
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8080
+  # TLS configuration for HTTPS
+  tls:
+  - hosts:
+    - madevara24.space
+    - www.madevara24.space
+    secretName: madevara24-tls 
