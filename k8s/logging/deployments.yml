@@ -18,6 +18,7 @@ spec:
           args:
             - -config.file=/etc/loki/loki.yaml
             - -config.expand-env=true
+            - -validation.allow-structured-metadata=false
           ports:
             - containerPort: 3100
           resources:
