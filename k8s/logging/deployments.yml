@@ -17,6 +17,7 @@ spec:
           image: grafana/loki:latest
           args:
             - -config.file=/etc/loki/loki.yaml
+            - -config.expand-env=true
           ports:
             - containerPort: 3100
           resources:
