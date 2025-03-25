@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+data:
+  postgresql.conf: |
+    max_connections = {{ .Values.postgres.config.maxConnections }}
+    shared_buffers = {{ .Values.postgres.config.sharedBuffers }}
+    effective_cache_size = {{ .Values.postgres.config.effectiveCacheSize }} 

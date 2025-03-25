@@ -1,0 +1,9 @@
+apiVersion: v2
+name: monorepo-display-case
+description: A Helm chart for Monorepo Display Case application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Devara
+    email: adityadevara91@gmail.com 

@@ -1,0 +1,11 @@
+# Ignore files that might contain real secrets
+secrets.yaml
+*-secrets.yaml
+*-secret.yaml
+*-values-prod.yaml
+*-values-dev.yaml
+*-values-staging.yaml
+
+# Standard Helm ignores
+charts/
+.tgz 

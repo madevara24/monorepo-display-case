@@ -1,0 +1,101 @@
+# Global Settings
+global:
+  environment: production
+  registry: localhost:5000
+
+# Frontend Configuration
+frontend:
+  replicaCount: 1
+  image:
+    repository: frontend
+    tag: latest
+  service:
+    type: ClusterIP
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  probes:
+    readiness:
+      initialDelaySeconds: 10
+      periodSeconds: 30
+
+# Backend Configuration
+backend:
+  replicaCount: 1
+  image:
+    repository: backend-service
+    tag: latest
+  port: 8080
+  service:
+    type: ClusterIP
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  probes:
+    readiness:
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    liveness:
+      path: /health
+      initialDelaySeconds: 15
+      periodSeconds: 20
+
+# PostgreSQL Configuration
+postgres:
+  image:
+    repository: postgres-vector
+    tag: latest
+  config:
+    maxConnections: 100
+    sharedBuffers: 128MB
+    effectiveCacheSize: 384MB
+  storage:
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+# Logging Configuration
+logging:
+  grafana:
+    enabled: true
+    storage:
+      size: 2Gi
+  loki:
+    enabled: true
+    storage:
+      size: 5Gi
+    retention:
+      days: 30
+  promtail:
+    enabled: true
+    positions:
+      storage:
+        size: 1Gi
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  className: traefik
+  domain: madevara24.space
+  paths:
+    frontend: /
+    backend: /api
+  tls:
+    enabled: true
+    # Secret must be created manually before deploying:
+    # kubectl create secret tls madevara24-tls --cert=/path/to/cert.pem --key=/path/to/key.pem
+    secretName: madevara24-tls 

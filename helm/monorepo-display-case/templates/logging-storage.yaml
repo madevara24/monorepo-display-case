@@ -1,0 +1,92 @@
+{{- if .Values.logging.loki.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: loki-pv
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logging
+spec:
+  capacity:
+    storage: {{ .Values.logging.loki.storage.size }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /opt/loki-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: loki-pvc
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.logging.loki.storage.size }}
+{{- end }}
+{{- if .Values.logging.grafana.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grafana-pv
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logging
+spec:
+  capacity:
+    storage: {{ .Values.logging.grafana.storage.size }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /opt/grafana-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.logging.grafana.storage.size }}
+{{- end }}
+{{- if .Values.logging.promtail.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: promtail-positions-pv
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logging
+spec:
+  capacity:
+    storage: {{ .Values.logging.promtail.positions.storage.size }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /opt/promtail-positions
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: promtail-positions-pvc
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.logging.promtail.positions.storage.size }}
+{{- end }} 
