@@ -1,0 +1,6 @@
+# Values file for using existing PVs
+persistentVolumes:
+  useExisting: true
+
+# The rest of the configuration remains the same, but you can customize as needed
+# For example, you might want to adjust resource limits or other settings 

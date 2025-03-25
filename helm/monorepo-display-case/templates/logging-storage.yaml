@@ -1,4 +1,5 @@
 {{- if .Values.logging.loki.enabled }}
+{{- if not .Values.persistentVolumes.useExisting }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -13,6 +14,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /opt/loki-data
+{{- end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -22,6 +24,10 @@ metadata:
     {{- include "monorepo-display-case.labels" . | nindent 4 }}
     app.kubernetes.io/component: logging
 spec:
+  {{- if .Values.persistentVolumes.useExisting }}
+  # When using existing PVs, explicitly select the PV by name
+  volumeName: loki-pv
+  {{- end }}
   accessModes:
     - ReadWriteOnce
   resources:
@@ -30,6 +36,7 @@ spec:
 {{- end }}
 {{- if .Values.logging.grafana.enabled }}
 ---
+{{- if not .Values.persistentVolumes.useExisting }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -44,6 +51,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /opt/grafana-data
+{{- end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -53,6 +61,10 @@ metadata:
     {{- include "monorepo-display-case.labels" . | nindent 4 }}
     app.kubernetes.io/component: logging
 spec:
+  {{- if .Values.persistentVolumes.useExisting }}
+  # When using existing PVs, explicitly select the PV by name
+  volumeName: grafana-pv
+  {{- end }}
   accessModes:
     - ReadWriteOnce
   resources:
@@ -61,6 +73,7 @@ spec:
 {{- end }}
 {{- if .Values.logging.promtail.enabled }}
 ---
+{{- if not .Values.persistentVolumes.useExisting }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -75,6 +88,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /opt/promtail-positions
+{{- end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -84,6 +98,10 @@ metadata:
     {{- include "monorepo-display-case.labels" . | nindent 4 }}
     app.kubernetes.io/component: logging
 spec:
+  {{- if .Values.persistentVolumes.useExisting }}
+  # When using existing PVs, explicitly select the PV by name
+  volumeName: promtail-positions-pv
+  {{- end }}
   accessModes:
     - ReadWriteOnce
   resources:

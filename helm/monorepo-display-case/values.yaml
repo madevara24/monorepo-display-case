@@ -3,6 +3,12 @@ global:
   environment: production
   registry: localhost:5000
 
+# Persistent Volume Settings
+persistentVolumes:
+  # Set to true to use existing PVs instead of creating new ones
+  # This allows preserving data when transitioning to Helm
+  useExisting: false
+
 # Frontend Configuration
 frontend:
   replicaCount: 1

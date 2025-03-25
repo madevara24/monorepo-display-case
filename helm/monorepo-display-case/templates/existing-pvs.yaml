@@ -1,0 +1,66 @@
+{{- if .Values.persistentVolumes.useExisting }}
+# This file contains special handling for existing PVs to avoid Helm trying to create them
+# while allowing other resources to be managed by Helm
+
+{{- if .Values.logging.loki.enabled }}
+# Add empty Loki PV since we're skipping creation
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: loki-pv-placeholder
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logging
+    skipCreation: "true"
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /tmp/placeholder
+{{- end }}
+
+{{- if .Values.logging.grafana.enabled }}
+---
+# Add empty Grafana PV since we're skipping creation
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: grafana-pv-placeholder
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logging
+    skipCreation: "true"
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /tmp/placeholder
+{{- end }}
+
+{{- if .Values.logging.promtail.enabled }}
+---
+# Add empty Promtail PV since we're skipping creation
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: promtail-positions-pv-placeholder
+  labels:
+    {{- include "monorepo-display-case.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logging
+    skipCreation: "true"
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /tmp/placeholder
+{{- end }}
+{{- end }} 
