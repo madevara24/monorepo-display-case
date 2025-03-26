@@ -28,6 +28,14 @@ frontend:
     readiness:
       initialDelaySeconds: 10
       periodSeconds: 30
+  # API configuration
+  api:
+    # Set to "internal" for cluster DNS, "external" to use ingress URL
+    mode: "internal"
+    # When using internal mode, use the k8s service name
+    internalUrl: "http://backend-service:8080"
+    # When using external mode, use the ingress URL
+    externalUrl: "https://madevara24.space/api"
 
 # Backend Configuration
 backend:
