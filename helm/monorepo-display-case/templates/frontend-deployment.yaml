@@ -19,6 +19,8 @@ spec:
         - name: frontend
           image: {{ .Values.global.registry }}/{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
           env:
+            - name: VITE_APP_ENV
+              value: "production"
             - name: BACKEND_URL
               value: {{ if eq .Values.frontend.api.mode "internal" }}{{ .Values.frontend.api.internalUrl }}{{ else }}{{ .Values.frontend.api.externalUrl }}{{ end }}
           ports:

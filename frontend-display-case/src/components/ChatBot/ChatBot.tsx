@@ -2,6 +2,7 @@ import { FC, useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import styles from './ChatBot.module.css'
 import content from '../../data/content.json'
+import ApiUtil, { API_PATHS } from '../../utils/api'
 
 interface Message {
   id: string
@@ -28,7 +29,7 @@ const ChatBot: FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
   // Get API URL and result limit from environment variables with fallbacks
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+  // const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
   const RESULT_LIMIT = import.meta.env.VITE_RESULT_LIMIT || 10
 
   // Check backend health when component mounts
@@ -45,13 +46,11 @@ const ChatBot: FC = () => {
 
   const checkBackendHealth = async () => {
     try {
-      console.log("Checking health at:", API_URL)
-      const response = await fetch(`${API_URL}/health`, {
+      const healthUrl = ApiUtil.getApiUrl(API_PATHS.HEALTH)
+      console.log("Checking health at:", healthUrl)
+      const response = await fetch(healthUrl, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+        ...ApiUtil.defaultFetchConfig,
         signal: AbortSignal.timeout(3000)
       })
       
@@ -123,12 +122,11 @@ const ChatBot: FC = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/v2/ask`, {
+      const askUrl = ApiUtil.getApiUrl(API_PATHS.ASK)
+      console.log("Sending question to:", askUrl)
+      const response = await fetch(askUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+        ...ApiUtil.defaultFetchConfig,
         body: JSON.stringify({ 
           question: input,
           limit: Number(RESULT_LIMIT)

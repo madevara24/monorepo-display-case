@@ -25,7 +25,7 @@ spec:
                 name: postgres-secret
           env:
             - name: ALLOWED_ORIGINS
-              value: "http://localhost:5173,http://localhost:3000,http://frontend,https://madevara24.space,https://www.madevara24.space"
+              value: "http://localhost:5173,http://localhost:3000,http://frontend,https://{{ .Values.ingress.domain }},https://www.{{ .Values.ingress.domain }}"
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
           readinessProbe:

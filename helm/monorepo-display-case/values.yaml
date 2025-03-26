@@ -107,7 +107,7 @@ ingress:
   domain: madevara24.space
   paths:
     frontend: /
-    backend: /api
+    backend: /backend
   tls:
     enabled: true
     # Secret must be created manually before deploying:
