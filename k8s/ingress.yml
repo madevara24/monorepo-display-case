@@ -56,9 +56,20 @@ spec:
             name: backend-service
             port:
               number: 8080
+  - host: "n8n.madevara24.space"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: n8n
+            port:
+              number: 5678
   # TLS configuration for HTTPS
   tls:
   - hosts:
     - madevara24.space
     - www.madevara24.space
-    secretName: madevara24-tls 
+    - n8n.madevara24.space
+    secretName: madevara24-tls
