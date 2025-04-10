@@ -28,6 +28,18 @@ spec:
               value: "production"
             - name: WEBHOOK_URL
               value: "https://n8n.madevara24.space"
+            - name: N8N_BASIC_AUTH_ACTIVE
+              value: "true"
+            - name: N8N_BASIC_AUTH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-auth
+                  key: username
+            - name: N8N_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-auth
+                  key: password
           resources:
             requests:
               cpu: "100m"
